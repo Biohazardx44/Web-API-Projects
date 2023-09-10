@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NoteApp.CryptoService\NoteApp.CryptoService.csproj" />
+    <ProjectReference Include="..\NoteApp.CustomExceptions\NoteApp.CustomExceptions.csproj" />
+    <ProjectReference Include="..\NoteApp.DataAccess\NoteApp.DataAccess.csproj" />
+    <ProjectReference Include="..\NoteApp.Domain\NoteApp.Domain.csproj" />
+    <ProjectReference Include="..\NoteApp.DTOs\NoteApp.DTOs.csproj" />
+    <ProjectReference Include="..\NoteApp.Mappers\NoteApp.Mappers.csproj" />
+  </ItemGroup>
+
+</Project>
