@@ -8,7 +8,7 @@ In the fast-paced world of software development, creating efficient and reliable
 
 ## NoteApp
 
-**Version: 1.0.0 Stable**
+**Version: 1.1.0 Stable**
 
 - Entity Framework, Dapper, and AdoNet Integration for Flexible Database Management
 - Code Optimization for Enhanced Performance

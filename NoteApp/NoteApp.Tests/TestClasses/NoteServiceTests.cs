@@ -378,6 +378,7 @@ namespace NoteApp.Tests.TestClasses
         [TestMethod]
         public void UpdateNote_InvalidTag_ThrowsNoteDataException()
         {
+            // Arrange
             var userRepository = new FakeUserRepository();
             var noteRepository = new FakeNoteRepository();
             var noteService = new NoteService(noteRepository, userRepository);
@@ -401,12 +402,14 @@ namespace NoteApp.Tests.TestClasses
                 UserId = 1
             };
 
+            // Act & Assert
             Assert.ThrowsException<NoteDataException>(() => noteService.UpdateNote(updateNoteDto));
         }
 
         [TestMethod]
         public void UpdateNote_NullText_ThrowsNoteDataException()
         {
+            // Arrange
             var userRepository = new FakeUserRepository();
             var noteRepository = new FakeNoteRepository();
             var noteService = new NoteService(noteRepository, userRepository);
@@ -430,12 +433,14 @@ namespace NoteApp.Tests.TestClasses
                 UserId = 1
             };
 
+            // Act & Assert
             Assert.ThrowsException<NoteDataException>(() => noteService.UpdateNote(updateNoteDto));
         }
 
         [TestMethod]
         public void UpdateNote_TextTooLong_ThrowsNoteDataException()
         {
+            // Arrange
             var userRepository = new FakeUserRepository();
             var noteRepository = new FakeNoteRepository();
             var noteService = new NoteService(noteRepository, userRepository);
@@ -459,6 +464,7 @@ namespace NoteApp.Tests.TestClasses
                 UserId = 1
             };
 
+            // Act & Assert
             Assert.ThrowsException<NoteDataException>(() => noteService.UpdateNote(updateNoteDto));
         }
     }

@@ -11,7 +11,7 @@ using NoteApp.DataAccess.Data;
 namespace NoteApp.DataAccess.Migrations
 {
     [DbContext(typeof(NoteAppDbContext))]
-    [Migration("20230909181643_Init")]
+    [Migration("20230911193733_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,7 +83,8 @@ namespace NoteApp.DataAccess.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -103,6 +104,15 @@ namespace NoteApp.DataAccess.Migrations
                             LastName = "LastName",
                             Password = "$??^R??|\"[u~{??",
                             Username = "user1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Age = 22,
+                            FirstName = "FirstName",
+                            LastName = "LastName",
+                            Password = "~X?;`|?U?????7 ",
+                            Username = "user2"
                         });
                 });
 

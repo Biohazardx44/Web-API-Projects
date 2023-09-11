@@ -8,6 +8,11 @@ namespace NoteApp.CryptoService
 {
     public static class JwtTokenGenerator
     {
+        /// <summary>
+        /// Generates a JSON Web Token (JWT) for the specified user with extended validity.
+        /// </summary>
+        /// <param name="user">The user for whom the JWT is generated.</param>
+        /// <returns>A JWT string with an extended validity period.</returns>
         public static string GenerateJwtToken(this User user)
         {
             JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
@@ -15,7 +20,7 @@ namespace NoteApp.CryptoService
 
             SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
             {
-                Expires = DateTime.UtcNow.AddDays(3),
+                Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha256Signature),
                 Subject = new ClaimsIdentity(
                     new[]

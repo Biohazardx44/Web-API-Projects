@@ -18,6 +18,10 @@ namespace NoteApp.Services.Implementation
             _userRepository = userRepository;
         }
 
+        /// <summary>
+        /// Changes the password for a user.
+        /// </summary>
+        /// <param name="changePasswordDto">The DTO containing password change information.</param>
         public void ChangePassword(ChangePasswordDto changePasswordDto)
         {
             var userFromDb = _userRepository.GetUserByUsername(changePasswordDto.Username);
@@ -27,9 +31,14 @@ namespace NoteApp.Services.Implementation
             var newPasswordHash = StringHasher.Hash(changePasswordDto.NewPassword);
 
             userFromDb.Password = newPasswordHash;
-            _userRepository.SaveChanges();
+            _userRepository.SaveChanges(userFromDb);
         }
 
+        /// <summary>
+        /// Logs a user in and generates a JWT token upon successful login.
+        /// </summary>
+        /// <param name="loginUserDto">The DTO containing login information.</param>
+        /// <returns>The JWT token if the login is successful; otherwise, null.</returns>
         public string LoginUser(LoginUserDto loginUserDto)
         {
             ValidateLogin(loginUserDto);
@@ -44,6 +53,10 @@ namespace NoteApp.Services.Implementation
             return token;
         }
 
+        /// <summary>
+        /// Registers a new user in the system.
+        /// </summary>
+        /// <param name="registerUserDto">The DTO containing user registration information.</param>
         public void RegisterUser(RegisterUserDto registerUserDto)
         {
             ValidateUser(registerUserDto);
@@ -54,6 +67,11 @@ namespace NoteApp.Services.Implementation
             _userRepository.Add(user);
         }
 
+        /// <summary>
+        /// Deletes a user from the system.
+        /// </summary>
+        /// <param name="id">The ID of the user to delete.</param>
+        /// <param name="userClaims">The claims of the authenticated user making the request.</param>
         public void DeleteUser(int id, ClaimsPrincipal userClaims)
         {
             var userFromDb = _userRepository.GetById(id);
@@ -76,6 +94,11 @@ namespace NoteApp.Services.Implementation
             _userRepository.Delete(userFromDb);
         }
 
+        /// <summary>
+        /// Updates user details in the system.
+        /// </summary>
+        /// <param name="updateUserDetailsDto">The DTO containing updated user details.</param>
+        /// <param name="userId">The ID of the user whose details are being updated.</param>
         public void UpdateUserDetails(UpdateUserDetailsDto updateUserDetailsDto, int userId)
         {
             var userFromDb = _userRepository.GetById(userId);
@@ -91,18 +114,22 @@ namespace NoteApp.Services.Implementation
             _userRepository.Update(userFromDb);
         }
 
+        /// <summary>
+        /// Validates user registration data.
+        /// </summary>
+        /// <param name="registerUserDto">The DTO containing user registration data to validate.</param>
         private void ValidateUser(RegisterUserDto registerUserDto)
         {
-            if (registerUserDto.Password != registerUserDto.ConfirmPassword)
-            {
-                throw new UserDataException("Password must match!");
-            }
-
             if (string.IsNullOrEmpty(registerUserDto.Username) ||
                 string.IsNullOrEmpty(registerUserDto.Password) ||
                 string.IsNullOrEmpty(registerUserDto.ConfirmPassword))
             {
                 throw new UserDataException("Username and Password are required fields!");
+            }
+
+            if (registerUserDto.Password != registerUserDto.ConfirmPassword)
+            {
+                throw new UserDataException("Password must match!");
             }
 
             if (registerUserDto.Username.Length < 5 || registerUserDto.Username.Length > 30)
@@ -138,6 +165,10 @@ namespace NoteApp.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// Validates user login data.
+        /// </summary>
+        /// <param name="loginUserDto">The DTO containing user login data to validate.</param>
         private void ValidateLogin(LoginUserDto loginUserDto)
         {
             if (string.IsNullOrEmpty(loginUserDto.Username) ||
@@ -147,6 +178,11 @@ namespace NoteApp.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// Validates password change data.
+        /// </summary>
+        /// <param name="changePasswordDto">The DTO containing password change data to validate.</param>
+        /// <param name="userFromDb">The user from the database for password validation.</param>
         private void ValidatePassword(ChangePasswordDto changePasswordDto, User userFromDb)
         {
             if (userFromDb == null)
@@ -170,6 +206,10 @@ namespace NoteApp.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// Validates user details update data.
+        /// </summary>
+        /// <param name="updateUserDetailsDto">The DTO containing updated user details data to validate.</param>
         private void ValidateUserDetails(UpdateUserDetailsDto updateUserDetailsDto)
         {
             if (!string.IsNullOrEmpty(updateUserDetailsDto.FirstName) && updateUserDetailsDto.FirstName.Length > 50)

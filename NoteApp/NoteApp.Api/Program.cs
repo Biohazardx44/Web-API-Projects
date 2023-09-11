@@ -5,7 +5,7 @@ using System.Text;
 
 /// * Note App
 /// * Created by Nikola Ilievski
-/// * Version: 1.0.0 Stable
+/// * Version: 1.1.0 Stable
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +18,12 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("NoteAppCS");
 
-//Ways to get values from AppSettings (OLD WAY)
+// Ways to get values from AppSettings (OLD WAY)
 var sectionValue = builder.Configuration.GetSection("TestSection").Value;
 var sectionValue2 = builder.Configuration.GetValue<string>("TestSection");
 var secretKeyFromAppSettings = builder.Configuration.GetSection("NoteAppSettings").GetValue<string>("SecretKey");
 
-//Ways to get values from AppSettings (NEW WAY)
+// Ways to get values from AppSettings (NEW WAY)
 var noteAppSettings = builder.Configuration.GetSection("NoteAppSettings");
 var noteAppSettingsObject = noteAppSettings.Get<NoteAppSettings>();
 

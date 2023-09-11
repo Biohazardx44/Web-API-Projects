@@ -18,6 +18,11 @@ namespace NoteApp.Api.Controllers
             _userService = userService;
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="registerUserDto">The data for registering a new user.</param>
+        /// <returns>A success response if the user is registered; otherwise, an error response.</returns>
         [AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterUserDto registerUserDto)
@@ -37,6 +42,11 @@ namespace NoteApp.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Logs in a user and returns an authentication token.
+        /// </summary>
+        /// <param name="loginUserDto">The data for user login.</param>
+        /// <returns>An authentication token if login is successful; otherwise, an error response.</returns>
         [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginUserDto loginUserDto)
@@ -60,6 +70,11 @@ namespace NoteApp.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Changes the password for the authenticated user.
+        /// </summary>
+        /// <param name="changePasswordDto">The data for changing the password.</param>
+        /// <returns>A success response if the password is changed; otherwise, an error response.</returns>
         [HttpPost("change-password")]
         public IActionResult ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
         {
@@ -82,6 +97,11 @@ namespace NoteApp.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes the authenticated user.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to delete.</param>
+        /// <returns>A success response if the user is deleted; otherwise, an error response.</returns>
         [HttpDelete("delete/{id}")]
         public IActionResult DeleteUser(int id)
         {
@@ -105,6 +125,11 @@ namespace NoteApp.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates details for the authenticated user.
+        /// </summary>
+        /// <param name="updateUserDetailsDto">The data for updating user details.</param>
+        /// <returns>A success response if the details are updated; otherwise, an error response.</returns>
         [HttpPut("update-details")]
         public IActionResult UpdateUserDetails([FromBody] UpdateUserDetailsDto updateUserDetailsDto)
         {

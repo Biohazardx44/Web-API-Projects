@@ -14,6 +14,10 @@ namespace NoteApp.DataAccess.Repositories.Implementation.AdoNetImplementation
             _connectionString = configuration.GetConnectionString("NoteAppCS");
         }
 
+        /// <summary>
+        /// Adds a new user entity to the database using ADO.NET.
+        /// </summary>
+        /// <param name="entity">The user entity to be added.</param>
         public void Add(User entity)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -35,6 +39,10 @@ namespace NoteApp.DataAccess.Repositories.Implementation.AdoNetImplementation
             }
         }
 
+        /// <summary>
+        /// Deletes a user entity from the database using ADO.NET.
+        /// </summary>
+        /// <param name="entity">The user entity to be deleted.</param>
         public void Delete(User entity)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -52,6 +60,10 @@ namespace NoteApp.DataAccess.Repositories.Implementation.AdoNetImplementation
             }
         }
 
+        /// <summary>
+        /// Retrieves a list of all user entities from the database using ADO.NET.
+        /// </summary>
+        /// <returns>A list of user entities.</returns>
         public List<User> GetAll()
         {
             var users = new List<User>();
@@ -83,6 +95,11 @@ namespace NoteApp.DataAccess.Repositories.Implementation.AdoNetImplementation
             return users;
         }
 
+        /// <summary>
+        /// Retrieves a user entity by its unique identifier from the database using ADO.NET.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user.</param>
+        /// <returns>The user entity if found; otherwise, null.</returns>
         public User GetById(int id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -113,6 +130,11 @@ namespace NoteApp.DataAccess.Repositories.Implementation.AdoNetImplementation
             }
         }
 
+        /// <summary>
+        /// Retrieves a user entity by its username from the database using ADO.NET.
+        /// </summary>
+        /// <param name="username">The username of the user.</param>
+        /// <returns>The user entity if found; otherwise, null.</returns>
         public User GetUserByUsername(string username)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -143,6 +165,12 @@ namespace NoteApp.DataAccess.Repositories.Implementation.AdoNetImplementation
             }
         }
 
+        /// <summary>
+        /// Logs in a user by verifying the username and hashed password using ADO.NET.
+        /// </summary>
+        /// <param name="username">The username of the user.</param>
+        /// <param name="hashedPassword">The hashed password of the user.</param>
+        /// <returns>The user entity if the login is successful; otherwise, null.</returns>
         public User LoginUser(string username, string hashedPassword)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -174,19 +202,28 @@ namespace NoteApp.DataAccess.Repositories.Implementation.AdoNetImplementation
             }
         }
 
-        public void SaveChanges()
+        /// <summary>
+        /// Saves changes to the database using ADO.NET.
+        /// </summary>
+        public void SaveChanges(User user)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 sqlConnection.Open();
-
-                using (SqlTransaction transaction = sqlConnection.BeginTransaction())
+                using (var transaction = sqlConnection.BeginTransaction())
                 {
                     try
                     {
+                        var query = "UPDATE Users SET Password = @Password WHERE Id = @Id";
+                        using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, transaction))
+                        {
+                            sqlCommand.Parameters.AddWithValue("@Password", user.Password);
+                            sqlCommand.Parameters.AddWithValue("@Id", user.Id);
+                            sqlCommand.ExecuteNonQuery();
+                        }
                         transaction.Commit();
                     }
-                    catch
+                    catch (Exception)
                     {
                         transaction.Rollback();
                         throw;
@@ -195,6 +232,10 @@ namespace NoteApp.DataAccess.Repositories.Implementation.AdoNetImplementation
             }
         }
 
+        /// <summary>
+        /// Updates an existing user entity in the database using ADO.NET.
+        /// </summary>
+        /// <param name="entity">The user entity to be updated.</param>
         public void Update(User entity)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))

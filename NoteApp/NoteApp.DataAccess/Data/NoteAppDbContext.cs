@@ -5,6 +5,9 @@ using NoteApp.Domain.Models;
 
 namespace NoteApp.DataAccess.Data
 {
+    /// <summary>
+    /// Represents the database context for the NoteApp application, responsible for interacting with the underlying database.
+    /// </summary>
     public class NoteAppDbContext : DbContext
     {
         public NoteAppDbContext(DbContextOptions options) : base(options) { }

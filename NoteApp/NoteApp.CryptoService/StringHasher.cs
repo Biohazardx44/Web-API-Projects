@@ -5,6 +5,11 @@ namespace NoteApp.CryptoService
 {
     public static class StringHasher
     {
+        /// <summary>
+        /// Computes the MD5 hash of the input string, typically used for hashing passwords.
+        /// </summary>
+        /// <param name="inputString">The input string to be hashed.</param>
+        /// <returns>A string representing the MD5 hash of the input string.</returns>
         public static string Hash(string inputString)
         {
             var mD5CryptoServiceProvider = new MD5CryptoServiceProvider();

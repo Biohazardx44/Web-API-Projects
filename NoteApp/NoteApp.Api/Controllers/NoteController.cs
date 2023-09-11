@@ -19,6 +19,10 @@ namespace NoteApp.Api.Controllers
             _noteService = noteService;
         }
 
+        /// <summary>
+        /// Gets all notes for the authenticated user.
+        /// </summary>
+        /// <returns>A list of note objects if found; otherwise, an error response.</returns>
         [HttpGet]
         public IActionResult GetAllNotes()
         {
@@ -37,6 +41,11 @@ namespace NoteApp.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets a note by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the note.</param>
+        /// <returns>The requested note if found; otherwise, an error response.</returns>
         [HttpGet("{id}")]
         public IActionResult GetById([FromRoute] int id)
         {
@@ -55,6 +64,11 @@ namespace NoteApp.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Adds a new note to the database.
+        /// </summary>
+        /// <param name="addNoteDto">The data for the new note.</param>
+        /// <returns>A success response if the note is added; otherwise, an error response.</returns>
         [HttpPost]
         public IActionResult AddNote([FromBody] AddNoteDto addNoteDto)
         {
@@ -77,6 +91,11 @@ namespace NoteApp.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an existing note in the database.
+        /// </summary>
+        /// <param name="updateNoteDto">The data for updating the note.</param>
+        /// <returns>A success response if the note is updated; otherwise, an error response.</returns>
         [HttpPut]
         public IActionResult UpdateNote([FromBody] UpdateNoteDto updateNoteDto)
         {
@@ -103,6 +122,11 @@ namespace NoteApp.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes a note from the database by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the note to delete.</param>
+        /// <returns>A success response if the note is deleted; otherwise, an error response.</returns>
         [HttpDelete("{id}")]
         public IActionResult DeleteNote([FromRoute] int id)
         {

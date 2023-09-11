@@ -17,7 +17,7 @@ namespace NoteApp.DataAccess.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Username = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -51,6 +51,11 @@ namespace NoteApp.DataAccess.Migrations
                 table: "Users",
                 columns: new[] { "Id", "Age", "FirstName", "LastName", "Password", "Username" },
                 values: new object[] { 1, 20, "FirstName", "LastName", "$??^R??|\"[u~{??", "user1" });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Age", "FirstName", "LastName", "Password", "Username" },
+                values: new object[] { 2, 22, "FirstName", "LastName", "~X?;`|?U?????7 ", "user2" });
 
             migrationBuilder.InsertData(
                 table: "Notes",

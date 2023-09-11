@@ -19,6 +19,10 @@ namespace NoteApp.Services.Implementation
             _userRepository = userRepository;
         }
 
+        /// <summary>
+        /// Adds a new note to the database.
+        /// </summary>
+        /// <param name="addNoteDto">The DTO containing note information to be added.</param>
         public void AddNote(AddNoteDto addNoteDto)
         {
             var userDb = _userRepository.GetById(addNoteDto.UserId);
@@ -33,6 +37,10 @@ namespace NoteApp.Services.Implementation
             _noteRepository.Add(newNoteDb);
         }
 
+        /// <summary>
+        /// Deletes a note from the database by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the note to delete.</param>
         public void DeleteNote(int id)
         {
             var noteFromDb = _noteRepository.GetById(id);
@@ -44,6 +52,11 @@ namespace NoteApp.Services.Implementation
             _noteRepository.Delete(noteFromDb);
         }
 
+        /// <summary>
+        /// Retrieves a list of all notes for a specific user from the database.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose notes are to be retrieved.</param>
+        /// <returns>A list of note DTOs.</returns>
         public List<NoteDto> GetAllNotes(int userId)
         {
             var notesFromDb = _noteRepository.GetAll();
@@ -59,6 +72,11 @@ namespace NoteApp.Services.Implementation
             return userNotes;
         }
 
+        /// <summary>
+        /// Retrieves a note by its unique ID from the database.
+        /// </summary>
+        /// <param name="id">The unique ID of the note to retrieve.</param>
+        /// <returns>The note DTO if found; otherwise, null.</returns>
         public NoteDto GetById(int id)
         {
             var noteFromDb = _noteRepository.GetById(id);
@@ -70,6 +88,10 @@ namespace NoteApp.Services.Implementation
             return noteFromDb.ToNoteDto();
         }
 
+        /// <summary>
+        /// Updates an existing note in the database.
+        /// </summary>
+        /// <param name="updateNoteDto">The DTO containing updated note information.</param>
         public void UpdateNote(UpdateNoteDto updateNoteDto)
         {
             var noteFromDb = _noteRepository.GetById(updateNoteDto.Id);
@@ -90,6 +112,10 @@ namespace NoteApp.Services.Implementation
             _noteRepository.Update(noteFromDb);
         }
 
+        /// <summary>
+        /// Validates the required fields for adding a new note.
+        /// </summary>
+        /// <param name="addNoteDto">The DTO containing note information to validate.</param>
         private void ValidateRequiredFields(AddNoteDto addNoteDto)
         {
             if (!Enum.IsDefined(typeof(Priority), addNoteDto.Priority))
@@ -113,6 +139,10 @@ namespace NoteApp.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// Validates the required fields for updating a note.
+        /// </summary>
+        /// <param name="updateNoteDto">The DTO containing updated note information to validate.</param>
         private void ValidateRequiredFields(UpdateNoteDto updateNoteDto)
         {
             if (!Enum.IsDefined(typeof(Priority), updateNoteDto.Priority))

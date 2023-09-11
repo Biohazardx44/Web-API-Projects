@@ -6,6 +6,6 @@ namespace NoteApp.DataAccess.Repositories.Abstraction
     {
         User GetUserByUsername(string username);
         User LoginUser(string username, string hashedPassword);
-        void SaveChanges();
+        void SaveChanges(User user);
     }
 }
