@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using NoteApp.Helpers;
+using Serilog;
 using System.Text;
 
 /// * Note App
 /// * Created by Nikola Ilievski
-/// * Version: 1.1.0 Stable
+/// * Version: 1.2.0 Stable
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,18 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Binding our custom configurations
+builder.Configuration
+    .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile(path: "serilog-config.json", optional: false, reloadOnChange: true)
+    .Build();
+
+// Register Serilog
+builder.Host.UseSerilog((context, config) =>
+{
+    config.ReadFrom.Configuration(context.Configuration);
+});
 
 var connectionString = builder.Configuration.GetConnectionString("NoteAppCS");
 
@@ -31,9 +44,9 @@ builder.Services.InjectServices();
 builder.Services.InjectRepositories();
 builder.Services.InjectDbContext(connectionString);
 
+// CONFIGURE JWT
 var secretKey = Encoding.ASCII.GetBytes(noteAppSettingsObject.SecretKey);
 
-// CONFIGURE JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

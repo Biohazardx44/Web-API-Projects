@@ -1,0 +1,54 @@
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+
+    // The following section specifies enrichers that augment log events with additional contextual information
+    "Enrich": [ "FromLogContext", "WithMachineName", "WithProcessId", "WithThreadId" ],
+
+    // In this section, we define various Serilog sinks (destinations) for log events, indicating where the log messages should be directed
+    "WriteTo": [
+
+      // Write in Console
+      {
+        "Name": "Console"
+      },
+
+      // Write in TXT File
+      {
+        "Name": "File",
+        "Args": {
+          "path": "./Logs/noteAppLogs.txt",
+          "outputTemplate": "[{Timestamp:G} {Level:u3}] : {Message}{NewLine:1}{Exception:1}"
+        }
+      },
+
+      // Write in JSON File
+      {
+        "Name": "File",
+        "Args": {
+          "path": "./Logs/noteAppLogs.json",
+          "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
+        }
+      },
+
+      // Write in SQL Server Database Table
+      {
+        "Name": "MSSqlServer",
+        "Args": {
+          "connectionString": "Server=LAPTOP-RTX3050T\\SQLEXPRESS;Database=NoteAppDb;Trusted_Connection=True;Encrypt=False",
+          "sinkOptionsSection": {
+            "tableName": "NoteAppLogs",
+            "autoCreateSqlTable": true
+          },
+          "restrictedToMinimumLevel": "Information"
+        }
+      }
+    ]
+  }
+}
