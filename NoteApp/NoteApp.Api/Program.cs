@@ -6,7 +6,7 @@ using System.Text;
 
 /// * Note App
 /// * Created by Nikola Ilievski
-/// * Version: 1.2.0 Stable
+/// * Version: 1.2.1 Stable
 
 var builder = WebApplication.CreateBuilder(args);
 

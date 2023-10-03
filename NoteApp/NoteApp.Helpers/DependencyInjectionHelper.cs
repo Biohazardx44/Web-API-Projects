@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NoteApp.DataAccess.Data;
 using NoteApp.DataAccess.Repositories.Abstraction;
-using NoteApp.DataAccess.Repositories.Implementation.AdoNetImplementation;
-using NoteApp.DataAccess.Repositories.Implementation.DapperImplementation;
 using NoteApp.DataAccess.Repositories.Implementation.EntityFrameworkImplementation;
 using NoteApp.Services.Abstraction;
 using NoteApp.Services.Implementation;
