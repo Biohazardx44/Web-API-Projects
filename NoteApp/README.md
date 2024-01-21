@@ -1,6 +1,6 @@
 # NoteApp
 
-## Version: 1.2.2 Stable
+## Version: 1.2.3 Stable
 
 ### About NoteApp:
 
@@ -29,4 +29,4 @@ Follow these steps to run NoteApp locally:
 4. **Change the ConnectionString:** Navigate to `NoteApp.Api > appsettings.json` and update the connection string to match your local database setup
 5. **Open NuGet Package Console:** Navigate to `Tools > NuGet Package Manager > Package Manager Console`
 6. **Setup Database:** Set NoteApp.Api as the default project in the console and setup a database with `add-migration <DB Name>` and `update-database` commands in the console
-7. **Test Endpoints with Postman or Swagger:** To test with Swagger, click on the `NoteApp.Api` button or find the URL in `NoteApp.Api > Properties > launchSettings.json`. For Postman, launch the application and use the URL from the same location
+7. **Test Endpoints with Swagger and Postman:** To test with Swagger, click on the `NoteApp.Api` button or find the URL in `NoteApp.Api > Properties > launchSettings.json`. For Postman, launch the application and use the URL from the same location

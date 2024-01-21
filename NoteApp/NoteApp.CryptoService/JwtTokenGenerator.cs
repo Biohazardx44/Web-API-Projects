@@ -16,7 +16,7 @@ namespace NoteApp.CryptoService
         public static string GenerateJwtToken(this User user)
         {
             JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            byte[] secretKeyBytes = Encoding.ASCII.GetBytes("NoteApp Very Secure Secret Key");
+            byte[] secretKeyBytes = Encoding.ASCII.GetBytes("NoteApp Very Very Secure Secret Key");
 
             SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
             {
