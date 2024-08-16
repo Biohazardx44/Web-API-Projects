@@ -11,7 +11,7 @@ using MovieApp.DataAccess.Data;
 namespace MovieApp.DataAccess.Migrations
 {
     [DbContext(typeof(MovieAppDbContext))]
-    [Migration("20240317194823_Init")]
+    [Migration("20240816185336_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -114,7 +114,8 @@ namespace MovieApp.DataAccess.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Username")
                         .IsRequired()

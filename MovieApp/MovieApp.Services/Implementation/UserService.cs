@@ -1,24 +1,28 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using MovieApp.CryptoService;
+﻿using MovieApp.CryptoService;
 using MovieApp.CustomExceptions;
 using MovieApp.DataAccess.Repositories.Abstraction;
+using MovieApp.Domain.Enums;
 using MovieApp.Domain.Models;
-using MovieApp.DTOs.MovieDTOs;
+using MovieApp.DTOs.UserDTOs;
+using MovieApp.Mappers.Extensions;
 using MovieApp.Services.Abstraction;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace MovieApp.Services.Implementation
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+
         public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
 
+        /// <summary>
+        /// Changes the password for a user.
+        /// </summary>
+        /// <param name="changePasswordDto">The DTO containing password change information.</param>
         public void ChangePassword(ChangePasswordDto changePasswordDto)
         {
             var userFromDb = _userRepository.GetUserByUsername(changePasswordDto.Username);
@@ -28,86 +32,131 @@ namespace MovieApp.Services.Implementation
             var newPasswordHash = StringHasher.Hash(changePasswordDto.NewPassword);
 
             userFromDb.Password = newPasswordHash;
-            _userRepository.SaveChanges();
+            _userRepository.SaveChanges(userFromDb);
         }
 
+        /// <summary>
+        /// Logs a user in and generates a JWT token upon successful login.
+        /// </summary>
+        /// <param name="loginUserDto">The DTO containing login information.</param>
+        /// <returns>The JWT token if the login is successful; otherwise, null.</returns>
         public string LoginUser(LoginUserDto loginUserDto)
         {
             ValidateLogin(loginUserDto);
 
             var userFromDb = _userRepository.LoginUser(loginUserDto.Username, StringHasher.Hash(loginUserDto.Password));
-
             if (userFromDb == null)
             {
                 throw new UserNotFoundException("User not found!");
             }
 
-            JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            byte[] secretKeyBytes = Encoding.ASCII.GetBytes("Our very hidden secret secret key");
-
-            SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
-            {
-                Expires = DateTime.UtcNow.AddDays(3),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha256Signature),
-                Subject = new ClaimsIdentity(
-                    new[]
-                    {
-                        new Claim("userFullName", $"{userFromDb.FirstName} {userFromDb.LastName}"),
-                        new Claim("userId", $"{userFromDb.Id}"),
-                        new Claim(ClaimTypes.Name, userFromDb.Username)
-                    }
-                )
-            };
-
-            SecurityToken token = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
-            return jwtSecurityTokenHandler.WriteToken(token);
+            var token = userFromDb.GenerateJwtToken();
+            return token;
         }
 
+        /// <summary>
+        /// Registers a new user in the system.
+        /// </summary>
+        /// <param name="registerUserDto">The DTO containing user registration information.</param>
         public void RegisterUser(RegisterUserDto registerUserDto)
         {
             ValidateUser(registerUserDto);
 
             var passwordHash = StringHasher.Hash(registerUserDto.Password);
-
-            var user = new User
-            {
-                Username = registerUserDto.Username,
-                FirstName = registerUserDto.FirstName,
-                LastName = registerUserDto.LastName,
-                FavoriteGenre = registerUserDto.FavoriteGenre,
-                Password = passwordHash
-            };
+            var user = registerUserDto.MapRegisterUserDtoToUser(passwordHash);
 
             _userRepository.Add(user);
         }
 
+        /// <summary>
+        /// Deletes a user from the system.
+        /// </summary>
+        /// <param name="id">The ID of the user to delete.</param>
+        /// <param name="userClaims">The claims of the authenticated user making the request.</param>
+        public void DeleteUser(int id, ClaimsPrincipal userClaims)
+        {
+            var userFromDb = _userRepository.GetById(id);
+            if (userFromDb == null)
+            {
+                throw new UserNotFoundException($"User with ID {id} does not exist!");
+            }
+
+            var userIdClaim = userClaims.FindFirst("userId");
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userIdFromToken))
+            {
+                throw new UserDataException("Invalid user token!");
+            }
+
+            if (userIdFromToken != id)
+            {
+                throw new UserDataException("You are not authorized to delete this user!");
+            }
+
+            _userRepository.Delete(userFromDb);
+        }
+
+        /// <summary>
+        /// Updates user details in the system.
+        /// </summary>
+        /// <param name="updateUserDetailsDto">The DTO containing updated user details.</param>
+        /// <param name="userId">The ID of the user whose details are being updated.</param>
+        public void UpdateUserDetails(UpdateUserDetailsDto updateUserDetailsDto, int userId)
+        {
+            var userFromDb = _userRepository.GetById(userId);
+            if (userFromDb == null)
+            {
+                throw new UserNotFoundException($"User with ID {userId} does not exist!");
+            }
+
+            ValidateUserDetails(updateUserDetailsDto);
+
+            userFromDb.UpdateUserDetails(updateUserDetailsDto);
+
+            _userRepository.Update(userFromDb);
+        }
+
+        /// <summary>
+        /// Validates user registration data.
+        /// </summary>
+        /// <param name="registerUserDto">The DTO containing user registration data to validate.</param>
         private void ValidateUser(RegisterUserDto registerUserDto)
         {
+            if (string.IsNullOrEmpty(registerUserDto.Username) ||
+                string.IsNullOrEmpty(registerUserDto.Password) ||
+                string.IsNullOrEmpty(registerUserDto.ConfirmPassword))
+            {
+                throw new UserDataException("Username and Password are required fields!");
+            }
+
             if (registerUserDto.Password != registerUserDto.ConfirmPassword)
             {
                 throw new UserDataException("Password must match!");
             }
 
-            if (string.IsNullOrEmpty(registerUserDto.Username) ||
-                string.IsNullOrEmpty(registerUserDto.Password) ||
-                string.IsNullOrEmpty(registerUserDto.ConfirmPassword))
-            {
-                throw new UserDataException("Username and password are required fields!");
-            }
-
             if (registerUserDto.Username.Length > 30)
             {
-                throw new UserDataException("Username: Maximum length for username is 30 characters");
+                throw new UserDataException("Maximum length for Username is 30 characters!");
+            }
+
+            if ((registerUserDto.Password.Length < 5 || registerUserDto.Password.Length > 30) &&
+                (registerUserDto.ConfirmPassword.Length < 5 || registerUserDto.ConfirmPassword.Length > 30))
+            {
+                throw new UserDataException("Password must be between 5 and 30 characters long!");
             }
 
             if (registerUserDto.FirstName.Length > 50)
             {
-                throw new UserDataException("Maximum length for FirstName is 50 characters");
+                throw new UserDataException("Maximum length for FirstName is 50 characters!");
             }
 
             if (registerUserDto.LastName.Length > 50)
             {
-                throw new UserDataException("Maximum length for LastName is 50 characters");
+                throw new UserDataException("Maximum length for LastName is 50 characters!");
+            }
+
+            if (!Enum.IsDefined(typeof(Genre), registerUserDto.FavoriteGenre))
+            {
+                throw new UserDataException("Genre is a required field!");
             }
 
             var userFromDb = _userRepository.GetUserByUsername(registerUserDto.Username);
@@ -117,15 +166,24 @@ namespace MovieApp.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// Validates user login data.
+        /// </summary>
+        /// <param name="loginUserDto">The DTO containing user login data to validate.</param>
         private void ValidateLogin(LoginUserDto loginUserDto)
         {
             if (string.IsNullOrEmpty(loginUserDto.Username) ||
                 string.IsNullOrEmpty(loginUserDto.Password))
             {
-                throw new UserDataException("Username and password are required fields!");
+                throw new UserDataException("Username and Password are required fields!");
             }
         }
 
+        /// <summary>
+        /// Validates password change data.
+        /// </summary>
+        /// <param name="changePasswordDto">The DTO containing password change data to validate.</param>
+        /// <param name="userFromDb">The user from the database for password validation.</param>
         private void ValidatePassword(ChangePasswordDto changePasswordDto, User userFromDb)
         {
             if (userFromDb == null)
@@ -140,12 +198,53 @@ namespace MovieApp.Services.Implementation
 
             if (string.IsNullOrEmpty(changePasswordDto.NewPassword))
             {
-                throw new UserDataException("New Password is required!");
+                throw new UserDataException("New Password is a required field!");
             }
 
-            if (changePasswordDto.NewPassword.Length < 5)
+            if (changePasswordDto.NewPassword.Length < 5 || changePasswordDto.NewPassword.Length > 30)
             {
-                throw new UserDataException("Password must be at least 5 characters long!");
+                throw new UserDataException("Password must be between 5 and 30 characters long!");
+            }
+        }
+
+        /// <summary>
+        /// Validates user details update data.
+        /// </summary>
+        /// <param name="updateUserDetailsDto">The DTO containing updated user details data to validate.</param>
+        private void ValidateUserDetails(UpdateUserDetailsDto updateUserDetailsDto)
+        {
+            if (!string.IsNullOrEmpty(updateUserDetailsDto.FirstName) && updateUserDetailsDto.FirstName.Length > 50)
+            {
+                throw new UserDataException("First name cannot exceed 50 characters!");
+            }
+
+            if (!string.IsNullOrEmpty(updateUserDetailsDto.LastName) && updateUserDetailsDto.LastName.Length > 50)
+            {
+                throw new UserDataException("Last name cannot exceed 50 characters!");
+            }
+
+            if (!string.IsNullOrEmpty(updateUserDetailsDto.Username) && (updateUserDetailsDto.Username.Length < 5 || updateUserDetailsDto.Username.Length > 30))
+            {
+                throw new UserDataException("Username must be between 5 and 30 characters long!");
+            }
+
+            var userFromDb = _userRepository.GetUserByUsername(updateUserDetailsDto.Username);
+            if (userFromDb != null)
+            {
+                throw new UserDataException($"The username {updateUserDetailsDto.Username} is already in use!");
+            }
+
+            if (string.IsNullOrEmpty(updateUserDetailsDto.FirstName) &&
+                string.IsNullOrEmpty(updateUserDetailsDto.LastName) &&
+                string.IsNullOrEmpty(updateUserDetailsDto.Username) &&
+                !Enum.IsDefined(typeof(Genre), updateUserDetailsDto.FavoriteGenre))
+            {
+                throw new UserDataException("No details provided. Please fill in at least one field.");
+            }
+
+            if (!Enum.IsDefined(typeof(Genre), updateUserDetailsDto.FavoriteGenre))
+            {
+                throw new UserDataException("Genre is a required field!");
             }
         }
     }

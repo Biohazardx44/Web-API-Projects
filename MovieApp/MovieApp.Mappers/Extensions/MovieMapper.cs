@@ -5,35 +5,44 @@ namespace MovieApp.Mappers.Extensions
 {
     public static class MovieMapper
     {
-        public static MovieDto MapToMovieDto(this Movie movie)
+        public static MovieDto ToMovieDto(this Movie movie)
         {
-            return new MovieDto
+            var movieDto = new MovieDto
             {
+                Title = movie.Title,
                 Description = movie.Description,
-                Genre = movie.Genre,
                 Year = movie.Year,
-                Title = movie.Title
+                Genre = movie.Genre
             };
+
+            if (movie.User is not null)
+            {
+                movieDto.UserFullName = $"{movie.User.FirstName} {movie.User.LastName}";
+            }
+
+            return movieDto;
         }
 
-        public static Movie MapToMovieAddDto(this MovieAddDto movieAddDto)
+        public static Movie ToMovie(this AddMovieDto addMovieDto)
         {
             return new Movie
             {
-                Description = movieAddDto.Description,
-                Genre = movieAddDto.Genre,
-                Year = movieAddDto.Year,
-                Title = movieAddDto.Title
+                Title = addMovieDto.Title,
+                Description = addMovieDto.Description,
+                Year = addMovieDto.Year,
+                Genre = addMovieDto.Genre,
+                UserId = addMovieDto.UserId
             };
         }
 
-        public static void UpdateMovieFromDto(this Movie movie, MovieUpdateDto updateDto)
+        public static void ToMovieFromUpdateMovieDto(this Movie movie, UpdateMovieDto updateMovieDto, User user)
         {
-            movie.Id = updateDto.Id;
-            movie.Title = updateDto.Title;
-            movie.Description = updateDto.Description;
-            movie.Year = updateDto.Year;
-            movie.Genre = updateDto.Genre;
+            movie.Title = updateMovieDto.Title;
+            movie.Description = updateMovieDto.Description;
+            movie.Year = updateMovieDto.Year;
+            movie.Genre = updateMovieDto.Genre;
+            movie.UserId = updateMovieDto.UserId;
+            movie.User = user;
         }
     }
 }

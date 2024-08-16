@@ -3,6 +3,10 @@ using Microsoft.IdentityModel.Tokens;
 using MovieApp.Helpers;
 using System.Text;
 
+/// * Movie App
+/// * Created by Nikola Ilievski
+/// * Version: 1.0.0 Stable
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,18 +16,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var cs = builder.Configuration.GetConnectionString("MoviesAppCS");
+var connectionString = builder.Configuration.GetConnectionString("MovieAppCS");
 
-var noteAppSettings = builder.Configuration.GetSection("MoviesAppSettings");
-var noteAppSettingsObject = noteAppSettings.Get<MoviesAppSettings>();
+var movieAppSettings = builder.Configuration.GetSection("MovieAppSettings");
+var movieAppSettingsObject = movieAppSettings.Get<MovieAppSettings>();
 
 builder.Services.InjectServices();
 builder.Services.InjectRepositories();
-builder.Services.InjectDbContext(cs);
-
-var secretKey = Encoding.ASCII.GetBytes(noteAppSettingsObject.SecretKey);
+builder.Services.InjectDbContext(connectionString);
 
 // CONFIGURE JWT
+var secretKey = Encoding.ASCII.GetBytes(movieAppSettingsObject.SecretKey);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

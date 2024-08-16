@@ -1,4 +1,4 @@
-﻿namespace MovieApp.DTOs.MovieDTOs
+﻿namespace MovieApp.DTOs.UserDTOs
 {
     public class ChangePasswordDto
     {

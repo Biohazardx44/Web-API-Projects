@@ -5,6 +5,9 @@ using MovieApp.Domain.Models;
 
 namespace MovieApp.DataAccess.Data
 {
+    /// <summary>
+    /// Represents the database context for the MovieApp application, responsible for interacting with the underlying database.
+    /// </summary>
     public class MovieAppDbContext : DbContext
     {
         public MovieAppDbContext(DbContextOptions options) : base(options) { }
@@ -45,16 +48,25 @@ namespace MovieApp.DataAccess.Data
 
             // Validations
             modelBuilder.Entity<User>()
-                .Property(x => x.FirstName)
-                .HasMaxLength(50);
+               .Property(x => x.FirstName)
+               .HasMaxLength(50);
 
             modelBuilder.Entity<User>()
-                .Property(x => x.LastName)
-                .HasMaxLength(50);
+               .Property(x => x.LastName)
+               .HasMaxLength(50);
 
             modelBuilder.Entity<User>()
                .Property(x => x.Username)
                .HasMaxLength(30)
+               .IsRequired();
+
+            modelBuilder.Entity<User>()
+               .Property(x => x.Password)
+               .HasMaxLength(30)
+               .IsRequired();
+
+            modelBuilder.Entity<User>()
+               .Property(x => x.FavoriteGenre)
                .IsRequired();
 
             // Seed initial data
@@ -108,9 +120,9 @@ namespace MovieApp.DataAccess.Data
                     Id = 1,
                     FirstName = "Eda",
                     LastName = "Nelson",
-                    FavoriteGenre = Genre.Action,
                     Username = "user1",
                     Password = StringHasher.Hash("user1"),
+                    FavoriteGenre = Genre.Action,
                     Movies = new List<Movie>()
                 });
 
@@ -120,9 +132,9 @@ namespace MovieApp.DataAccess.Data
                     Id = 2,
                     FirstName = "John",
                     LastName = "Peterson",
-                    FavoriteGenre = Genre.Thriller,
                     Username = "user2",
                     Password = StringHasher.Hash("user2"),
+                    FavoriteGenre = Genre.Thriller,
                     Movies = new List<Movie>()
                 });
         }

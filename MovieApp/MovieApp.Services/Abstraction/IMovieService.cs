@@ -7,8 +7,8 @@ namespace MovieApp.Services.Abstraction
     {
         List<MovieDto> GetAllMovies(int userId);
         MovieDto GetById(int id);
-        void AddMovie(MovieAddDto movieAddDto);
-        void UpdateMovie(MovieUpdateDto movieUpdateDto);
+        void AddMovie(AddMovieDto addMovieDto);
+        void UpdateMovie(UpdateMovieDto updateMovieDto);
         void DeleteMovie(int id);
         List<MovieDto> FilterMovies(Genre? genre, int? year, int userId);
     }
